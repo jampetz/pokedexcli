@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestCleanInput(t *testing.T) {
 	cases := []struct {
@@ -36,5 +39,56 @@ func TestCleanInput(t *testing.T) {
 			}
 		}
 	}
+}
 
+func TestIdExtraction(t *testing.T) {
+	cases := []struct {
+		input    string
+		expected struct {
+			value int
+			err   error
+		}
+	}{
+		{
+			input: "https://pokeapi.co/api/v2/location-area/13/",
+			expected: struct {
+				value int
+				err   error
+			}{13, nil},
+		},
+		{
+			input: "https://pokeapi.co/api/v2/location-area/12345/",
+			expected: struct {
+				value int
+				err   error
+			}{12345, nil},
+		},
+		{
+			input: "https://pokeapi.co/api/v2/location-area/id1234/",
+			expected: struct {
+				value int
+				err   error
+			}{0, fmt.Errorf("error")},
+		},
+		{
+			input: "https://pokeapi.co/api/v2/location-area/abcd/",
+			expected: struct {
+				value int
+				err   error
+			}{0, fmt.Errorf("error")},
+		},
+	}
+
+	for _, id := range cases {
+		actual, err := getIDFromURL(id.input)
+		if err != nil && id.expected.err == nil {
+			t.Errorf("ID extraction error: %v", err)
+			continue
+		}
+
+		if actual != id.expected.value {
+			t.Errorf("ID mismatch: %v vs %v", actual, id.expected.value)
+			continue
+		}
+	}
 }

@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func startRepl() {
+func startRepl(cfg *config) {
 	inputScanner := bufio.NewScanner(os.Stdin)
 	fmt.Println("Welcome to Pokedex CLI tool\nType \"help\" to get the list of available commands")
 	for {
@@ -26,27 +26,40 @@ func startRepl() {
 			continue
 		}
 
-		command.callback()
+		err := command.callback(cfg)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
 type commands struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(cfg *config) error
 }
 
 func getCommands() map[string]commands {
 	return map[string]commands{
-		"exit": {
-			name:        "exit",
-			description: "Exit application",
-			callback:    exitCommand,
+		"map": {
+			name:        "map",
+			description: "Show map (moving forward)",
+			callback:    mapForward,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Show map (moving backward)",
+			callback:    mapBackward,
 		},
 		"help": {
 			name:        "help",
 			description: "Prints all available commands",
 			callback:    helpCommand,
+		},
+		"exit": {
+			name:        "exit",
+			description: "Exit application",
+			callback:    exitCommand,
 		},
 	}
 }
