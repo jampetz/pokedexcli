@@ -77,6 +77,13 @@ func TestIdExtraction(t *testing.T) {
 				err   error
 			}{0, fmt.Errorf("error")},
 		},
+		{
+			input: "https://pokeapi.co/api/v2/pokemon/72/",
+			expected: struct {
+				value int
+				err   error
+			}{72, nil},
+		},
 	}
 
 	for _, id := range cases {

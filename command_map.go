@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -20,17 +19,17 @@ func getIDFromURL(url string) (int, error) {
 	return targetID, nil
 }
 
-func mapForward(cfg *config) error {
+func mapForward(cfg *config, args ...string) error {
 	resp, err := cfg.pokeapiClient.ListLocationAreas(cfg.nextLocationAreaURL)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	fmt.Println("Available locations:")
 	for _, location := range resp.Results {
 		id, err := getIDFromURL(location.URL)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 
 		fmt.Printf("%v) %v\n", id, location.Name)
@@ -41,20 +40,20 @@ func mapForward(cfg *config) error {
 	return nil
 }
 
-func mapBackward(cfg *config) error {
+func mapBackward(cfg *config, args ...string) error {
 	if cfg.prevLocationAreaULR == nil {
 		return errors.New("you're on first page")
 	}
 	resp, err := cfg.pokeapiClient.ListLocationAreas(cfg.prevLocationAreaULR)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	fmt.Println("Available locations:")
 	for _, location := range resp.Results {
 		id, err := getIDFromURL(location.URL)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 
 		fmt.Printf("%v) %v\n", id, location.Name)

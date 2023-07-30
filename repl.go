@@ -18,15 +18,20 @@ func startRepl(cfg *config) {
 		if len(cleanCommand) == 0 {
 			continue
 		}
+		args := []string{}
+		if len(cleanCommand) > 1 {
+			args = cleanCommand[1:]
+		}
+		commandName := cleanCommand[0]
 
 		availableCommands := getCommands()
-		command, ok := availableCommands[cleanCommand[0]]
+		command, ok := availableCommands[commandName]
 		if !ok {
 			fmt.Println("Unknown command\nType \"help\" to get the list of available commands")
 			continue
 		}
 
-		err := command.callback(cfg)
+		err := command.callback(cfg, args...)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -36,7 +41,7 @@ func startRepl(cfg *config) {
 type commands struct {
 	name        string
 	description string
-	callback    func(cfg *config) error
+	callback    func(*config, ...string) error
 }
 
 func getCommands() map[string]commands {
@@ -50,6 +55,26 @@ func getCommands() map[string]commands {
 			name:        "mapb",
 			description: "Show map (moving backward)",
 			callback:    mapBackward,
+		},
+		"explore": {
+			name:        "explore {locationId or locationName}",
+			description: "Explore specified location",
+			callback:    callbackExplore,
+		},
+		"catch": {
+			name:        "catch {pokemonId or pokemonName}",
+			description: "Catch specified pokemon",
+			callback:    callbackCatch,
+		},
+		"inspect": {
+			name:        "inspect {pokemonName}",
+			description: "Show detailed information about pokemon",
+			callback:    callbackInpect,
+		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "View caught pokemon in your pokedex",
+			callback:    callbackPokedex,
 		},
 		"help": {
 			name:        "help",

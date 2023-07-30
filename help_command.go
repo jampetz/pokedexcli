@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func helpCommand(cfg *config) error {
+func helpCommand(cfg *config, args ...string) error {
 	fmt.Println("List of available commands:")
 	commands := getCommands()
 	for _, cmd := range commands {
